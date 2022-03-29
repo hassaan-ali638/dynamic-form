@@ -1,68 +1,42 @@
 import React, { useState } from "react";
 import { Alert } from "react-bootstrap";
+import Home from "./Home";
 
 export default function Login() {
-  const[email, setEmail]=useState();
-  const[password, setPassword]=useState();
-  const [flag, setFlag] = useState(false);
   const [formData,setForm] = useState({})
+  const [flag, setFlag] = useState(false);
+  const [home, setHome] = useState(true);
 
   function handleLogin(e){
     e.preventDefault();
     console.log(formData)
     if(!formData.email || !formData.password){
         setFlag(true);
-    }else{ if (showMessage()) 
-      {setFlag(false);
-            let users = localStorage.setItem("users") 
+    }else{{
+      setFlag(false);
+            let users = localStorage.getItem("users") 
             users  = users ? JSON.parse(users) : []
-            console.log(users.find(u=>u.email !== formData.email),users.find(u=>u.email === formData.email))
-            if(users.filter(u=>u.email === formData.email).length ===0){
-
-                localStorage.getItem("users", JSON.stringify([...users, formData]));
-            }
-            console.log("logged in.");
-            alert("login successfully")}
+            if(users.filter(u=>u.email === formData.email).length >0  && users.filter(u=>u.password === formData.password).length >0){
+            console.log("email and password matched");
+            alert("Login successfully!")
+            setHome(!home);
+            setFlag(false);
+          }
           
+            else{
+              alert("Invalid Email and Password.")
+            }
+            }      
         }
 };
-function showMessage()
-{
-    if (password !== formData.Password || email !== formData.email) {
-        alert("please type email and password that stored in local storage");return false;
-    } else{
-     return true;
-}
-}
 const setField =(e)=>{
-  console.log(e.target)
-  setForm({ ...formData, [e.target.name]: e.target.value})
+    console.log(e.target)
+    setForm({ ...formData, [e.target.name]: e.target.value})
 }
-
-/*
-  function handleLogin(e) {
-    e.preventDefault();
-    let pass = localStorage
-      .getItem("Password");
-    let mail = localStorage.getItem("Email");
-    
-
-    if (!emaillog || !passwordlog) {
-      setFlag(true);
-      console.log("EMPTY");
-    } else if (password !== pass || emaillog !== mail) {
-      setFlag(true);
-    } else {
-
-      setHome(!home);
-      setFlag(false);
-    
-    }
-  }
-  */
-
   return (
+
     <div>
+      {home ? (
         <form onSubmit={handleLogin}>
           <h3>LogIn</h3>
           <div className="form-group">
@@ -73,6 +47,7 @@ const setField =(e)=>{
               className="form-control"
               placeholder="Enter email"
               onChange={(e)=> setField(e)}
+              
             />
           </div>
 
@@ -84,19 +59,25 @@ const setField =(e)=>{
               className="form-control"
               placeholder="Enter password"
               onChange={(e)=> setField(e)}
+              
             />
           </div>
-
-          <button type="submit" className="btn btn-dark btn-lg btn-block">
-            Login
-          </button>
-
+          <div>
+          <button  type="submit" className="btn btn-dark btn-lg btn-block">
+         
+          Login</button> 
+          </div>
+          
           {flag && (
             <Alert color="primary" variant="warning">
-              Fill correct Info else keep trying.
+              Fill correct Info else keep trying.a
             </Alert>
           )}
         </form>
+        ) : (
+          <Home />
+          )}
     </div>
   );
 }
+
